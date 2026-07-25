@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg-primary: #f8fafc; /* Slate 50 */
+  --text-primary: #0f172a; /* Slate 900 */
+}
+
+.dark {
+  --bg-primary: #0a0a0a; /* True Black */
+  --text-primary: #f8fafc;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+@layer utilities {
+  .water-bubble {
+    border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+    animation: morph 3s linear infinite;
+    box-shadow: inset 0 0 10px rgba(59, 130, 246, 0.5); /* Blue shadow */
+  }
+  
+  @keyframes morph {
+    0%, 100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+    34% { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; }
+    67% { border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%; }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+}
+
+/* Override selection color to Blue */
+::selection {
+  background-color: #2563eb; 
+  color: white;
+}
+/* Apple-grade Mobile Optimizations */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Remove Recharts Focus Box */
+.recharts-wrapper, 
+.recharts-surface, 
+.recharts-cartesian-grid, 
+.recharts-cartesian-grid-bg {
+  outline: none !important;
+}
+
+input:focus, select:focus, textarea:focus, button:focus {
+  outline: none !important;
+}
+
+/* Safe area padding for iOS */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
