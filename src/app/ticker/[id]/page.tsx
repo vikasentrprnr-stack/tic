@@ -79,11 +79,14 @@ export default function TickerPage({ params }: { params: Promise<{ id: string }>
   return (
     <div className="min-h-screen font-['Poppins',sans-serif] bg-[#f8fafc] dark:bg-[#0a0a0a] text-neutral-900 dark:text-white pb-32 xl:pb-20">
       <Navbar />
-      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6 sm:py-8 grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8">
+      
+      {/* Container max-w prevents horizontal scrolling on mobile */}
+      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6 sm:py-8 grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8 w-full overflow-hidden">
         
-        {/* Left Column: Chart */}
-        <div className="xl:col-span-2 space-y-4 sm:space-y-6">
-          <div className="bg-white dark:bg-[#121212] p-5 sm:p-6 rounded-[1.5rem] border border-neutral-200 dark:border-neutral-800 shadow-sm sm:flex sm:items-center sm:justify-between">
+        {/* Left Column: Header & Chart */}
+        <div className="xl:col-span-2 space-y-4 sm:space-y-6 w-full min-w-0">
+          
+          <div className="bg-white dark:bg-[#121212] p-5 sm:p-6 rounded-[1.25rem] sm:rounded-[1.5rem] border border-neutral-200 dark:border-neutral-800 shadow-sm sm:flex sm:items-center sm:justify-between w-full">
             <div className="mb-4 sm:mb-0">
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                 {metricData?.countryId && (
@@ -99,26 +102,34 @@ export default function TickerPage({ params }: { params: Promise<{ id: string }>
               </p>
             </div>
 
+            {/* Mobile swipeable controls wrapper */}
             <div className="flex flex-col sm:items-end gap-2 w-full sm:w-auto">
-              <div className="flex items-center justify-between sm:justify-start gap-1 bg-neutral-100 dark:bg-[#1a1a1a] p-1 rounded-xl w-full sm:w-auto">
-                {["USD", "EUR", "GBP", "INR", "JPY"].map((curr) => (
-                  <button key={curr} onClick={() => setTargetCurrency(curr)} className={`px-2.5 py-1 rounded-lg text-[10px] font-bold ${targetCurrency === curr ? "bg-blue-600 text-white" : "text-neutral-500"}`}>{curr}</button>
-                ))}
+              
+              <div className="w-full sm:w-auto overflow-x-auto custom-scrollbar pb-1 sm:pb-0">
+                <div className="flex items-center justify-between sm:justify-start gap-1 bg-neutral-100 dark:bg-[#1a1a1a] p-1 rounded-xl w-full min-w-max sm:min-w-0">
+                  {["USD", "EUR", "GBP", "INR", "JPY"].map((curr) => (
+                    <button key={curr} onClick={() => setTargetCurrency(curr)} className={`px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-lg text-xs sm:text-[10px] font-bold transition-all ${targetCurrency === curr ? "bg-blue-600 text-white shadow-sm" : "text-neutral-500"}`}>{curr}</button>
+                  ))}
+                </div>
               </div>
-              <div className="flex justify-between sm:justify-start bg-neutral-100 dark:bg-[#1a1a1a] p-1 rounded-xl w-full sm:w-auto border border-neutral-200 dark:border-neutral-800">
-                {["1D", "5D", "1M", "6M", "1Y"].map((tf) => (
-                  <button key={tf} onClick={() => setTimeframe(tf)} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${timeframe === tf ? "bg-blue-600 text-white shadow-md" : "text-neutral-500"}`}>{tf}</button>
-                ))}
+              
+              <div className="w-full sm:w-auto overflow-x-auto custom-scrollbar">
+                <div className="flex justify-between sm:justify-start bg-neutral-100 dark:bg-[#1a1a1a] p-1 rounded-xl w-full min-w-max sm:min-w-0 border border-neutral-200 dark:border-neutral-800">
+                  {["1D", "5D", "1M", "6M", "1Y"].map((tf) => (
+                    <button key={tf} onClick={() => setTimeframe(tf)} className={`px-4 sm:px-3 py-2 sm:py-1.5 text-xs font-bold rounded-lg transition-all ${timeframe === tf ? "bg-blue-600 text-white shadow-md" : "text-neutral-500"}`}>{tf}</button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="h-[300px] sm:h-[460px] bg-white dark:bg-[#121212] rounded-[1.5rem] border border-neutral-200 dark:border-neutral-800 p-4 sm:p-6 shadow-sm select-none">
+          {/* Chart Frame: min-w-0 and overflow-hidden prevent Recharts from blowing out the flex grid on mobile */}
+          <div className="h-[320px] sm:h-[460px] w-full min-w-0 overflow-hidden bg-white dark:bg-[#121212] rounded-[1.25rem] sm:rounded-[1.5rem] border border-neutral-200 dark:border-neutral-800 pt-4 pb-2 pr-3 pl-0 sm:p-6 shadow-sm select-none">
             {loadingChart ? <div className="h-full w-full rounded-2xl bg-gradient-to-r from-neutral-100 via-neutral-200 dark:from-[#121212] dark:via-[#1a1a1a] animate-[shimmer_1.5s_infinite]" /> : <TickerChart data={displayData} timeframe={timeframe} currencyPrefix={displayPrefix} />}
           </div>
 
           {/* Mobile News Stream (Shows below chart on mobile) */}
-          <div className="xl:hidden bg-white dark:bg-[#121212] rounded-[1.5rem] border border-neutral-200 dark:border-neutral-800 p-4 sm:p-5 shadow-sm">
+          <div className="xl:hidden bg-white dark:bg-[#121212] rounded-[1.25rem] border border-neutral-200 dark:border-neutral-800 p-4 sm:p-5 shadow-sm">
             <h3 className="font-bold text-sm mb-4 flex items-center gap-2"><Newspaper className="w-4 h-4 text-blue-500"/> Catalyst News</h3>
             <div className="space-y-3">
               {newsData.length === 0 ? <p className="text-xs text-neutral-400">Fetching...</p> : newsData.slice(0,3).map(news => (
@@ -173,7 +184,6 @@ export default function TickerPage({ params }: { params: Promise<{ id: string }>
       {/* MOBILE STICKY AI CHAT POPUP */}
       <div className={`xl:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-2xl border-t border-neutral-200 dark:border-neutral-800 transition-all duration-300 shadow-[0_-20px_40px_rgba(0,0,0,0.1)] rounded-t-3xl pb-safe flex flex-col ${isMobileChatOpen ? 'h-[75vh]' : 'h-auto'}`}>
         
-        {/* Expanded Chat History */}
         <AnimatePresence>
           {isMobileChatOpen && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -183,7 +193,7 @@ export default function TickerPage({ params }: { params: Promise<{ id: string }>
               </div>
               {messages.map((msg, i) => (
                 <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[85%] p-3 text-xs font-medium ${msg.role === "user" ? "bg-blue-600 text-white rounded-2xl rounded-tr-xs" : "bg-neutral-100 dark:bg-[#1a1a1a] rounded-2xl rounded-tl-xs"}`}>{msg.content}</div>
+                  <div className={`max-w-[85%] p-3 text-xs font-medium ${msg.role === "user" ? "bg-blue-600 text-white rounded-2xl rounded-tr-xs" : "bg-neutral-100 dark:bg-[#1a1a1a] border border-neutral-200 dark:border-neutral-800 rounded-2xl rounded-tl-xs"}`}>{msg.content}</div>
                 </div>
               ))}
               {isChatting && <div className="text-xs text-blue-500 font-bold animate-pulse">Analyzing...</div>}
@@ -191,7 +201,6 @@ export default function TickerPage({ params }: { params: Promise<{ id: string }>
           )}
         </AnimatePresence>
 
-        {/* Always-Visible Input Field */}
         <form onSubmit={handleChat} className="p-3 sm:p-4">
           <div className="relative">
             <input 
